@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -74,10 +75,19 @@ public class BasicItemController {
     }
 
     //PRG : Post, Redirect, Get
-    @PostMapping("/add")
-    public String addItemV5(Item item) {    //@ModelAttribute 생략 가능
+//    @PostMapping("/add")
+    public String addItemV5(Item item) {
         itemRepository.save(item);
         return "redirect:/basic/items/" + item.getId();
+    }
+
+    @PostMapping("/add")
+    public String addItemV6(Item item, RedirectAttributes redirectAttributes) {
+        Item savedItem = itemRepository.save(item);
+        redirectAttributes.addAttribute("itemId", savedItem.getId());
+        redirectAttributes.addAttribute("status", true);
+        return "redirect:/basic/items/{itemId}";
+        //redirectAttributesd의 값이 치환되어 들어감. 들어가지 않은 건 쿼리 파라미터로 넘어감.
     }
 
     @GetMapping("/{itemId}/edit")
